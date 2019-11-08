@@ -22,15 +22,16 @@ class _MQTTViewState extends State<MQTTView> {
   void initState() {
     super.initState();
 
+    /*
     _hostTextController.addListener(_printLatestValue);
     _messageTextController.addListener(_printLatestValue);
     _topicTextController.addListener(_printLatestValue);
+
+     */
   }
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is removed from the widget tree.
-    // This also removes the _printLatestValue listener.
     _hostTextController.dispose();
     _messageTextController.dispose();
     _topicTextController.dispose();
@@ -46,6 +47,7 @@ class _MQTTViewState extends State<MQTTView> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<MQTTAppState>(context);
+    // Keep a reference to the app state.
     currentAppState = appState;
     var scaffold =
         Scaffold(appBar: _buildAppBar(context), body: _buildColumn());
@@ -145,40 +147,10 @@ class _MQTTViewState extends State<MQTTView> {
     );
   }
 
-  String _prepareStateMessageFrom(MQTTAppConnectionState state) {
-    switch (state) {
-      case MQTTAppConnectionState.connected:
-        return "Connected";
-      case MQTTAppConnectionState.connecting:
-        return "Connecting";
-      case MQTTAppConnectionState.disconnected:
-        return "Disconnected";
-    }
-  }
-
-  void _configureAndConnect() {
-    manager = MQTTManager(
-        host: _hostTextController.text,
-        topic: _topicTextController.text,
-        identifier: 'ios',
-        state: currentAppState);
-    manager.initializeMQTTClient();
-    manager.connect();
-  }
-
-  void _publishMessage(String text) {
-    String os_Prefix = "Flutter_iOS";
-    if(Platform.isAndroid){
-      os_Prefix = "Flutter_Android";
-    }
-    final message = os_Prefix + " says: " + text;
-    manager.publish(message);
-    _messageTextController.clear();
-  }
-
   Widget _buildConnecteButtonFrom(MQTTAppConnectionState state) {
     return Row(
       children: <Widget>[
+
         Expanded(
           child: RaisedButton(
             color: Colors.lightBlueAccent,
@@ -188,6 +160,18 @@ class _MQTTViewState extends State<MQTTView> {
                 : null, //
           ),
         ),
+        SizedBox(width: 10),
+        Expanded(
+          child: RaisedButton(
+            color: Colors.redAccent,
+            child: Text('Disconnect'),
+            onPressed: state == MQTTAppConnectionState.connected
+                ? _disconnect
+                : null, //
+          ),
+        ),
+
+
       ],
     );
   }
@@ -202,5 +186,44 @@ class _MQTTViewState extends State<MQTTView> {
             }
           : null, //
     );
+  }
+  // Utility functions
+  String _prepareStateMessageFrom(MQTTAppConnectionState state) {
+    switch (state) {
+      case MQTTAppConnectionState.connected:
+        return "Connected";
+      case MQTTAppConnectionState.connecting:
+        return "Connecting";
+      case MQTTAppConnectionState.disconnected:
+        return "Disconnected";
+    }
+  }
+
+  void _configureAndConnect() {
+    // TODO: Use UUID
+    String os_Prefix = "Flutter_iOS";
+    if(Platform.isAndroid){
+      os_Prefix = "Flutter_Android";
+    }
+    manager = MQTTManager(
+        host: _hostTextController.text,
+        topic: _topicTextController.text,
+        identifier: os_Prefix,
+        state: currentAppState);
+    manager.initializeMQTTClient();
+    manager.connect();
+  }
+
+  void _disconnect(){
+    manager.disconnect();
+  }
+  void _publishMessage(String text) {
+    String os_Prefix = "Flutter_iOS";
+    if(Platform.isAndroid){
+      os_Prefix = "Flutter_Android";
+    }
+    final message = os_Prefix + " says: " + text;
+    manager.publish(message);
+    _messageTextController.clear();
   }
 }

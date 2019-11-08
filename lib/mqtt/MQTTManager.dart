@@ -52,11 +52,11 @@ class MQTTManager{
       await _client.connect();
     } on Exception catch (e) {
       print('EXAMPLE::client exception - $e');
-      _disconnect();
+      disconnect();
     }
   }
 
-  void _disconnect() {
+  void disconnect() {
     print('Disconnected');
     _client.disconnect();
   }
