@@ -1,6 +1,6 @@
 # flutter_mqtt_app
 
-A new Flutter MQTT application.
+A flutter application to demonstrate MQTT.... Using different MQTT brokers transfer data between multiple devices.
 
 ## Getting Started
 
