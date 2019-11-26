@@ -1,8 +1,9 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_mqtt_app/mqtt/state/MQTTAppState.dart';
 import 'package:flutter_mqtt_app/mqtt/MQTTManager.dart';
-import 'dart:io' show Platform;
+
 
 class MQTTView extends StatefulWidget {
   @override
@@ -38,25 +39,28 @@ class _MQTTViewState extends State<MQTTView> {
     super.dispose();
   }
 
+  /*
   _printLatestValue() {
     print("Second text field: ${_hostTextController.text}");
     print("Second text field: ${_messageTextController.text}");
     print("Second text field: ${_topicTextController.text}");
   }
 
+   */
+
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<MQTTAppState>(context);
+    final MQTTAppState appState = Provider.of<MQTTAppState>(context);
     // Keep a reference to the app state.
     currentAppState = appState;
-    var scaffold =
+    final Scaffold scaffold =
         Scaffold(appBar: _buildAppBar(context), body: _buildColumn());
     return scaffold;
   }
 
   Widget _buildAppBar(BuildContext context) {
     return AppBar(
-      title: Text('MQTT'),
+      title: const Text('MQTT'),
       backgroundColor: Colors.greenAccent,
     );
   }
@@ -78,12 +82,12 @@ class _MQTTViewState extends State<MQTTView> {
       child: Column(
         children: <Widget>[
           _buildTextFieldWith(_hostTextController, 'Enter broker address',currentAppState.getAppConnectionState),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           _buildTextFieldWith(
               _topicTextController, 'Enter a topic to subscribe or listen', currentAppState.getAppConnectionState),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           _buildPublishMessageRow(),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           _buildConnecteButtonFrom(currentAppState.getAppConnectionState)
         ],
       ),
@@ -117,8 +121,8 @@ class _MQTTViewState extends State<MQTTView> {
   Widget _buildTextFieldWith(TextEditingController controller, String hintText,
       MQTTAppConnectionState state) {
     bool shouldEnable = false;
-    if ((controller == _messageTextController &&
-        state == MQTTAppConnectionState.connected)) {
+    if (controller == _messageTextController &&
+        state == MQTTAppConnectionState.connected) {
       shouldEnable = true;
     } else if ((controller == _hostTextController &&
         state == MQTTAppConnectionState.disconnected) || (controller == _topicTextController &&
@@ -129,7 +133,7 @@ class _MQTTViewState extends State<MQTTView> {
         enabled: shouldEnable,
         controller: controller,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.only(left: 0, bottom: 0, top: 0, right: 0),
+          contentPadding: const EdgeInsets.only(left: 0, bottom: 0, top: 0, right: 0),
           labelText: hintText,
         ));
   }
@@ -154,24 +158,22 @@ class _MQTTViewState extends State<MQTTView> {
         Expanded(
           child: RaisedButton(
             color: Colors.lightBlueAccent,
-            child: Text('Connect'),
+            child: const Text('Connect'),
             onPressed: state == MQTTAppConnectionState.disconnected
                 ? _configureAndConnect
                 : null, //
           ),
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Expanded(
           child: RaisedButton(
             color: Colors.redAccent,
-            child: Text('Disconnect'),
+            child: const Text('Disconnect'),
             onPressed: state == MQTTAppConnectionState.connected
                 ? _disconnect
                 : null, //
           ),
         ),
-
-
       ],
     );
   }
@@ -179,7 +181,7 @@ class _MQTTViewState extends State<MQTTView> {
   Widget _buildSendButtonFrom(MQTTAppConnectionState state) {
     return RaisedButton(
       color: Colors.green,
-      child: Text('Send'),
+      child: const Text('Send'),
       onPressed: state == MQTTAppConnectionState.connected
           ? () {
               _publishMessage(_messageTextController.text);
@@ -191,24 +193,24 @@ class _MQTTViewState extends State<MQTTView> {
   String _prepareStateMessageFrom(MQTTAppConnectionState state) {
     switch (state) {
       case MQTTAppConnectionState.connected:
-        return "Connected";
+        return 'Connected';
       case MQTTAppConnectionState.connecting:
-        return "Connecting";
+        return 'Connecting';
       case MQTTAppConnectionState.disconnected:
-        return "Disconnected";
+        return 'Disconnected';
     }
   }
 
   void _configureAndConnect() {
     // TODO: Use UUID
-    String os_Prefix = "Flutter_iOS";
+    String osPrefix = 'Flutter_iOS';
     if(Platform.isAndroid){
-      os_Prefix = "Flutter_Android";
+      osPrefix = 'Flutter_Android';
     }
     manager = MQTTManager(
         host: _hostTextController.text,
         topic: _topicTextController.text,
-        identifier: os_Prefix,
+        identifier: osPrefix,
         state: currentAppState);
     manager.initializeMQTTClient();
     manager.connect();
@@ -218,11 +220,11 @@ class _MQTTViewState extends State<MQTTView> {
     manager.disconnect();
   }
   void _publishMessage(String text) {
-    String os_Prefix = "Flutter_iOS";
+    String osPrefix = 'Flutter_iOS';
     if(Platform.isAndroid){
-      os_Prefix = "Flutter_Android";
+      osPrefix = 'Flutter_Android';
     }
-    final message = os_Prefix + " says: " + text;
+    final String message = osPrefix + ' says: ' + text;
     manager.publish(message);
     _messageTextController.clear();
   }

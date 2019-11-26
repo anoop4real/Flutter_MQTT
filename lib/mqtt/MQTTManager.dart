@@ -5,11 +5,11 @@ import 'package:flutter_mqtt_app/mqtt/state/MQTTAppState.dart';
 class MQTTManager{
 
   // Private instance of client
-  MQTTAppState _currentState;
+  final MQTTAppState _currentState;
   MqttClient _client;
-  String _identifier;
-  String _host;
-  String _topic;
+  final String _identifier;
+  final String _host;
+  final String _topic;
 
   // Constructor
   MQTTManager({
@@ -44,7 +44,6 @@ class MQTTManager{
   }
   // Connect to the host
   void connect() async{
-    // TODO Assert if client is not nil
     assert(_client != null);
     try {
       print('EXAMPLE::Mosquitto start client connecting....');
