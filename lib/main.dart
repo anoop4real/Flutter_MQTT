@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: ChangeNotifierProvider<MQTTAppState>(
-        builder: (_) => MQTTAppState(),
+        create: (_) => MQTTAppState(),
         child: MQTTView(),
       )
     );
