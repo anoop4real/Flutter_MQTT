@@ -143,7 +143,7 @@ class _MQTTViewState extends State<MQTTView> {
       padding: const EdgeInsets.all(20.0),
       child: Container(
         width: 400,
-        height: 300,
+        height: 200,
         child: SingleChildScrollView(
           child: Text(text),
         ),

@@ -19,7 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  mqtt_client: ^5.6.1
+  mqtt_client: ^7.2.1
   provider: ^3.1.0+1
 
   # The following adds the Cupertino Icons font to your application.

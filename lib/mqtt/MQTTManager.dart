@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:flutter_mqtt_app/mqtt/state/MQTTAppState.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 
 class MQTTManager{
 
   // Private instance of client
   final MQTTAppState _currentState;
-  MqttClient _client;
+  MqttServerClient _client;
   final String _identifier;
   final String _host;
   final String _topic;
@@ -21,7 +22,7 @@ class MQTTManager{
 ): _identifier = identifier, _host = host, _topic = topic, _currentState = state ;
 
   void initializeMQTTClient(){
-    _client = MqttClient(_host,_identifier);
+    _client = MqttServerClient(_host,_identifier);
     _client.port = 1883;
     _client.keepAlivePeriod = 20;
     _client.onDisconnected = onDisconnected;
@@ -74,7 +75,7 @@ class MQTTManager{
   /// The unsolicited disconnect callback
   void onDisconnected() {
     print('EXAMPLE::OnDisconnected client callback - Client disconnection');
-    if (_client.connectionStatus.returnCode == MqttConnectReturnCode.solicited) {
+    if (_client.connectionStatus.returnCode == MqttConnectReturnCode.noneSpecified) {
       print('EXAMPLE::OnDisconnected callback is solicited, this is correct');
     }
     _currentState.setAppConnectionState(MQTTAppConnectionState.disconnected);
@@ -90,12 +91,6 @@ class MQTTManager{
       final String pt =
       MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
       _currentState.setReceivedText(pt);
-
-      /// The above may seem a little convoluted for users only interested in the
-      /// payload, some users however may be interested in the received publish message,
-      /// lets not constrain ourselves yet until the package has been in the wild
-      /// for a while.
-      /// The payload is a byte buffer, this will be specific to the topic
       print(
           'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
       print('');
